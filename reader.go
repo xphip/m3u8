@@ -848,6 +848,19 @@ func decodeLineOfMediaPlaylist(p *MediaPlaylist, wv *WV, state *decodingState, l
 		}
 	case strings.HasPrefix(line, "#"):
 		// comments are ignored
+
+		// Twitch Start
+	case strings.HasPrefix(line, "#EXT-X-TWITCH-ELAPSED-SECS:"):
+		state.listType = MEDIA
+		if _, err = fmt.Sscanf(line, "#EXT-X-TWITCH-ELAPSED-SECS:%f", &p.ElapsedSeconds); strict && err != nil {
+			return err
+		}
+	case strings.HasPrefix(line, "#EXT-X-TWITCH-TOTAL-SECS:"):
+		state.listType = MEDIA
+		if _, err := fmt.Sscanf(line, "#EXT-X-TWITCH-TOTAL-SECS:%f", &p.TotalSeconds); strict && err != nil {
+			return err
+		}
+		// Twitch End
 	}
 	return err
 }
