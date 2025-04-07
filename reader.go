@@ -604,6 +604,20 @@ func decodeLineOfMediaPlaylist(p *MediaPlaylist, wv *WV, state *decodingState, l
 		if _, err = fmt.Sscanf(line, "#EXT-X-MEDIA-SEQUENCE:%d", &p.SeqNo); strict && err != nil {
 			return err
 		}
+
+		// Twitch Start
+	case strings.HasPrefix(line, "#EXT-X-TWITCH-ELAPSED-SECS:"):
+		state.listType = MEDIA
+		if _, err = fmt.Sscanf(line, "#EXT-X-TWITCH-ELAPSED-SECS:%f", &p.ElapsedSeconds); strict && err != nil {
+			return err
+		}
+	case strings.HasPrefix(line, "#EXT-X-TWITCH-TOTAL-SECS:"):
+		state.listType = MEDIA
+		if _, err = fmt.Sscanf(line, "#EXT-X-TWITCH-TOTAL-SECS:%f", &p.TotalSeconds); strict && err != nil {
+			return err
+		}
+		// Twitch End
+
 	case strings.HasPrefix(line, "#EXT-X-PLAYLIST-TYPE:"):
 		state.listType = MEDIA
 		var playlistType string
@@ -848,19 +862,6 @@ func decodeLineOfMediaPlaylist(p *MediaPlaylist, wv *WV, state *decodingState, l
 		}
 	case strings.HasPrefix(line, "#"):
 		// comments are ignored
-
-		// Twitch Start
-	case strings.HasPrefix(line, "#EXT-X-TWITCH-ELAPSED-SECS:"):
-		state.listType = MEDIA
-		if _, err = fmt.Sscanf(line, "#EXT-X-TWITCH-ELAPSED-SECS:%f", &p.ElapsedSeconds); strict && err != nil {
-			return err
-		}
-	case strings.HasPrefix(line, "#EXT-X-TWITCH-TOTAL-SECS:"):
-		state.listType = MEDIA
-		if _, err := fmt.Sscanf(line, "#EXT-X-TWITCH-TOTAL-SECS:%f", &p.TotalSeconds); strict && err != nil {
-			return err
-		}
-		// Twitch End
 	}
 	return err
 }
