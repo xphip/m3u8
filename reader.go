@@ -608,12 +608,20 @@ func decodeLineOfMediaPlaylist(p *MediaPlaylist, wv *WV, state *decodingState, l
 		// Twitch Start
 	case strings.HasPrefix(line, "#EXT-X-TWITCH-ELAPSED-SECS:"):
 		state.listType = MEDIA
-		if _, err = fmt.Sscanf(line, "#EXT-X-TWITCH-ELAPSED-SECS:%f", &p.ElapsedSeconds); strict && err != nil {
+		var elapsedSecondsStr string
+		if _, err = fmt.Sscanf(line, "#EXT-X-TWITCH-ELAPSED-SECS:%s", &elapsedSecondsStr); strict && err != nil {
+			return err
+		}
+		if p.ElapsedSeconds, err = strconv.ParseFloat(elapsedSecondsStr, 64); err != nil {
 			return err
 		}
 	case strings.HasPrefix(line, "#EXT-X-TWITCH-TOTAL-SECS:"):
 		state.listType = MEDIA
-		if _, err = fmt.Sscanf(line, "#EXT-X-TWITCH-TOTAL-SECS:%f", &p.TotalSeconds); strict && err != nil {
+		var totalSecondsStr string
+		if _, err = fmt.Sscanf(line, "#EXT-X-TWITCH-TOTAL-SECS:%s", &totalSecondsStr); strict && err != nil {
+			return err
+		}
+		if p.TotalSeconds, err = strconv.ParseFloat(totalSecondsStr, 64); err != nil {
 			return err
 		}
 		// Twitch End
